@@ -7,7 +7,13 @@ def get_upcoming_birthdays(users):
 
     for user in users:
         birthday = datetime.strptime(user['birthday'], '%Y.%m.%d').date()
-        birthday_this_year = birthday.replace(year=today.year)
+
+        try:
+            birthday_this_year = birthday.replace(year=today.year)
+        except ValueError:
+            birthday_this_year = birthday.replace(
+                year=today.year, day=28
+            )
         # робимо в обьект
 
         if birthday_this_year < today:
