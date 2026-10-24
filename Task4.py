@@ -1,36 +1,35 @@
 #4
-from datetime import datetime, timedelta
+
+from datetime import datetime, date, timedelta
 
 def get_upcoming_birthdays(users):
-    today = datetime.today().date()
+    today = date.today()
     upcoming_birthdays = []
+
+    def birthday_in_year(birthday, year):
+        try:
+            return birthday.replace(year=year)
+        except ValueError:
+            # 29 лютого у невисокосному році -> 28 лютого
+            return birthday.replace(year=year, day=28)
 
     for user in users:
         birthday = datetime.strptime(user['birthday'], '%Y.%m.%d').date()
 
-        try:
-            birthday_this_year = birthday.replace(year=today.year)
-        except ValueError:
-            birthday_this_year = birthday.replace(
-                year=today.year, day=28
-            )
-        # робимо в обьект
+        birthday_this_year = birthday_in_year(birthday, today.year)
+        # робимо в об'єкт
 
         if birthday_this_year < today:
-            birthday_this_year = birthday.replace(year=today.year + 1)
+            birthday_this_year = birthday_in_year(birthday, today.year + 1)
         # якщо др пройшов
 
-        if 0 <= (birthday_this_year - today).days < 7:
+        if (birthday_this_year - today).days < 7:
             # Перевіряємо, чи попадає день народження
             # у найближчі сім календарних днів, включаючи сьогоднішній
 
-            if birthday_this_year.weekday() == 5:
-                birthday_this_year += timedelta(days=2)
-            # Якщо день народження у суботу, додаємо два дні, щоб отримати понеділо
-
-            elif birthday_this_year.weekday() == 6:
-                birthday_this_year += timedelta(days=1)
-            # Якщо день народження у недiлю, додаємо два дні, щоб отримати понеділо
+            if birthday_this_year.weekday() >= 5:
+                birthday_this_year += timedelta(days=7 - birthday_this_year.weekday())
+            # Субота (+2) або неділя (+1) -> переносимо на понеділок
 
             upcoming_birthdays.append({
                 'name': user['name'],
@@ -38,7 +37,6 @@ def get_upcoming_birthdays(users):
             })
 
     return upcoming_birthdays
-
 
 users = [
     {'name': 'John Doe', 'birthday': '1985.01.23'},
