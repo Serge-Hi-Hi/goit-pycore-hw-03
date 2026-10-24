@@ -6,12 +6,21 @@ def normalize_phone(phone_number):
     phone_number = re.sub(r'[^\d]', '', phone_number)
 
     if phone_number.startswith('380'):
-        return '+' + phone_number
+        pass
 
-    if phone_number.startswith('0'):
-        return '+38' + phone_number
+    elif phone_number.startswith('80'):
+        phone_number = '3' + phone_number
 
-    return '+38' +  phone_number
+    elif phone_number.startswith('0'):
+        phone_number = '38' + phone_number
+
+    else:
+        phone_number = '380' + phone_number
+
+    return '+' +  phone_number
+
+    if len(result) != 12:
+        return None
 
 raw_numbers = [
         "067\\t123 4567",
